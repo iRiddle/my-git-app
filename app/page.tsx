@@ -5,7 +5,7 @@ import Button from "./shared/Button";
 import { ICommit } from "./interfaces/ICommit";
 
 const fetchCommits = async (): Promise<ICommit[]> => {
-  const res = await fetch("/api/commits", {
+  const res = await fetch("http://localhost:3001/api/commits", {
     headers: {
       "Cache-Control": "no-store, max-age=0",
       Pragma: "no-cache",
@@ -42,9 +42,7 @@ const Home = () => {
 
     socket.onmessage = (event) => {
       const newCommit = JSON.parse(event.data);
-      if (newCommit.message !== "Connected to WebSocket server") {
-        setCommits((prevCommits) => [newCommit, ...prevCommits]);
-      }
+      setCommits((prevCommits) => [newCommit, ...prevCommits]);
     };
 
     return () => {
