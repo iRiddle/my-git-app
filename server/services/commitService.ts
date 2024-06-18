@@ -18,7 +18,7 @@ export const fetchLatestCommit = async (): Promise<Commit> => {
 
 export const fetchAllCommits = async (): Promise<Commit[]> => {
   const allCommits: Commit[] = [];
-  const perPage = 30;
+  const perPage = 60;
   const maxPages = 10;
   let page = 1;
   let hasMore = true;
