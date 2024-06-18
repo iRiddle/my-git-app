@@ -1,52 +1,58 @@
-import { useState } from "react";
-import { GetServerSideProps } from "next";
+"use client";
+import { useState, useEffect } from "react";
 import CommitList from "./containers/CommitList";
+import Button from "./shared/Button";
+
 import { ICommit } from "./interfaces/ICommit";
 
-interface HomeProps {
-  initialCommits: ICommit[];
-}
+const fetchCommits = async (): Promise<ICommit[]> => {
+  const res = await fetch("/api/commits");
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(
-    "https://api.github.com/repos/your-github-username/your-repo-name/commits",
-    {
-      headers: {
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-      },
-    }
-  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch commits");
+  }
 
-  const initialCommits = await res.json();
-
-  return {
-    props: {
-      initialCommits,
-    },
-  };
+  return res.json();
 };
 
-const Home: React.FC<HomeProps> = ({ initialCommits }) => {
-  const [commits, setCommits] = useState<Commit[]>(initialCommits);
+const Home = () => {
+  const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadCommits = async () => {
+      setIsLoading(true);
+      try {
+        const initialCommits = await fetchCommits();
+        setCommits(initialCommits);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCommits();
+  }, []);
 
   const refreshCommits = async () => {
     setIsLoading(true);
-    const res = await fetch("/api/commits");
-    const newCommits = await res.json();
-    setCommits(newCommits);
-    setIsLoading(false);
+    try {
+      const newCommits = await fetch("/api/commits").then((res) => res.json());
+      setCommits(newCommits);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Git Commit History</h1>
-      <button
-        onClick={refreshCommits}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
-      >
+      <h1 className="text-2xl font-bold mb-4">История коммитов</h1>
+      <Button onClick={refreshCommits} disabled={isLoading} className="mb-4">
         {isLoading ? "Refreshing..." : "Refresh"}
-      </button>
+      </Button>
       <CommitList commits={commits} />
     </div>
   );
