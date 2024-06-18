@@ -12,10 +12,11 @@ export async function GET() {
     const { data } = await octokit.repos.listCommits({
       owner: "iRiddle",
       repo: "my-git-app",
-      per_page: 10,
+      per_page: 20,
       headers: {
         "Cache-Control": "no-store",
         Pragma: "no-cache",
+        "If-None-Match": "",
       },
     });
 
@@ -25,6 +26,7 @@ export async function GET() {
       headers: {
         "Cache-Control": "no-store, max-age=0",
         Pragma: "no-cache",
+        "If-None-Match": "",
       },
     });
   } catch (error) {
