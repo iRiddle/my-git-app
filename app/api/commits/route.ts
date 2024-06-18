@@ -6,13 +6,11 @@ const octokit = new Octokit({
 });
 
 export async function GET() {
-  console.log("Fetching commits...");
-
   try {
     const { data } = await octokit.repos.listCommits({
       owner: "iRiddle",
       repo: "my-git-app",
-      per_page: 20,
+      per_page: 25,
       headers: {
         "Cache-Control": "no-store",
         Pragma: "no-cache",
@@ -21,8 +19,6 @@ export async function GET() {
         timestamp: new Date().getTime(),
       },
     });
-
-    console.log("Fetched commits:", data);
 
     return NextResponse.json(data, {
       headers: {
