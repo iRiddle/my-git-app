@@ -2,11 +2,14 @@
 import { useState, useEffect } from "react";
 import CommitList from "./containers/CommitList";
 import Button from "./shared/Button";
-
 import { ICommit } from "./interfaces/ICommit";
 
 const fetchCommits = async (): Promise<ICommit[]> => {
-  const res = await fetch("/api/commits");
+  const res = await fetch("/api/commits", {
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch commits");
@@ -38,7 +41,7 @@ const Home = () => {
   const refreshCommits = async () => {
     setIsLoading(true);
     try {
-      const newCommits = await fetch("/api/commits").then((res) => res.json());
+      const newCommits = await fetchCommits();
       setCommits(newCommits);
     } catch (error) {
       console.error(error);
@@ -48,8 +51,10 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">История коммитов</h1>
+    <div className="max-w-3xl mx-auto py-8">
+      <h1 className="text-4xl font-bold mb-6 text-center">
+        There are {commits.length} commits
+      </h1>
       <Button onClick={refreshCommits} disabled={isLoading} className="mb-4">
         {isLoading ? "Refreshing..." : "Refresh"}
       </Button>
