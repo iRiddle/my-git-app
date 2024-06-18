@@ -1,17 +1,26 @@
-import React, { FC } from "react";
+import { ReactNode, FC } from "react";
+import cn from "classnames";
 
 interface IButtonProps {
-  children: React.ReactNode;
+  children: ReactNode;
   disabled?: boolean;
+  className?: string;
   onClick: () => void;
 }
 
-export const Button: FC<IButtonProps> = ({ onClick, children, disabled }) => (
+export const Button: FC<IButtonProps> = ({
+  children,
+  disabled,
+  className,
+  onClick,
+}) => (
   <button
     disabled={disabled}
-    className={`px-4 py-2 bg-blue-500 text-white rounded ${
-      disabled ? "opacity-50 cursor-not-allowed" : ""
-    }`}
+    className={cn(
+      "px-4 py-2 bg-blue-500 text-white rounded",
+      { "opacity-50 cursor-not-allowed": disabled },
+      className
+    )}
     onClick={onClick}
   >
     {children}
