@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import CommitList from "./containers/CommitList";
 import Button from "./shared/Button";
 import { ICommit } from "./interfaces/ICommit";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiRefreshCw } from "react-icons/fi";
 
 const fetchCommits = async (): Promise<ICommit[]> => {
   const res = await fetch("http://localhost:3001/api/commits", {
@@ -13,7 +15,8 @@ const fetchCommits = async (): Promise<ICommit[]> => {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch commits");
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to fetch commits");
   }
 
   return res.json();
@@ -22,6 +25,7 @@ const fetchCommits = async (): Promise<ICommit[]> => {
 const Home = () => {
   const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCommits = async () => {
@@ -29,8 +33,8 @@ const Home = () => {
       try {
         const initialCommits = await fetchCommits();
         setCommits(initialCommits);
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -52,11 +56,12 @@ const Home = () => {
 
   const refreshCommits = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const newCommits = await fetchCommits();
       setCommits(newCommits);
     } catch (error) {
-      console.error(error);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -64,12 +69,25 @@ const Home = () => {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-6 text-center">
-        There are {commits.length} commits
-      </h1>
-      <Button onClick={refreshCommits} disabled={isLoading} className="mb-4">
-        {isLoading ? "Refreshing..." : "Refresh"}
-      </Button>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-bold">
+          <span className="text-blue-500">There are</span>{" "}
+          <span className="text-black">{commits.length}</span>{" "}
+          <span className="text-black">commits</span>
+        </h1>
+        <Button
+          onClick={refreshCommits}
+          disabled={isLoading}
+          className="flex items-center"
+        >
+          {isLoading ? (
+            <AiOutlineLoading3Quarters className="animate-spin" />
+          ) : (
+            <FiRefreshCw />
+          )}
+        </Button>
+      </div>
+      {error && <div className="text-red-500">{error}</div>}
       <CommitList commits={commits} />
     </div>
   );
