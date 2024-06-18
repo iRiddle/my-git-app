@@ -10,7 +10,6 @@ export async function GET() {
     const { data } = await octokit.repos.listCommits({
       owner: "iRiddle",
       repo: "my-git-app",
-      per_page: 25,
       headers: {
         "Cache-Control": "no-store",
         Pragma: "no-cache",
