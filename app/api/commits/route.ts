@@ -7,32 +7,22 @@ const octokit = new Octokit({
 
 export async function GET() {
   try {
+    const allCommits = [];
     let page = 1;
-    const perPage = 25;
-    let allCommits = [];
+    let per_page = 30;
 
     while (true) {
       const { data } = await octokit.repos.listCommits({
         owner: "iRiddle",
         repo: "my-git-app",
-        per_page: perPage,
-        page: page,
-        headers: {
-          "Cache-Control": "no-store",
-          Pragma: "no-cache",
-        },
+        per_page,
+        page,
       });
 
-      if (data.length === 0) {
-        break;
-      }
+      if (data.length === 0) break;
 
-      allCommits = allCommits.concat(data);
-      if (data.length < perPage) {
-        break;
-      }
-
-      page += 1;
+      allCommits.push(...data);
+      page++;
     }
 
     return NextResponse.json(allCommits, {
