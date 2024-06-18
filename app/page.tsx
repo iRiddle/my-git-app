@@ -61,7 +61,7 @@ const Home = () => {
       const newCommits = await fetchCommits();
       setCommits(newCommits);
     } catch (error) {
-      setError(error.message);
+      if (error instanceof Error) setError(error.message);
     } finally {
       setIsLoading(false);
     }
