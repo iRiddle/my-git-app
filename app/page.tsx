@@ -7,7 +7,8 @@ import { ICommit } from "./interfaces/ICommit";
 const fetchCommits = async (): Promise<ICommit[]> => {
   const res = await fetch("/api/commits", {
     headers: {
-      "Cache-Control": "no-store, max-age=0",
+      "Cache-Control": "no-store",
+      Pragma: "no-cache",
     },
   });
 
@@ -22,32 +23,24 @@ const Home = () => {
   const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const loadCommits = async () => {
-      setIsLoading(true);
-      try {
-        const initialCommits = await fetchCommits();
-        setCommits(initialCommits);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadCommits();
-  }, []);
-
-  const refreshCommits = async () => {
+  const loadCommits = async () => {
     setIsLoading(true);
     try {
-      const newCommits = await fetchCommits();
-      setCommits(newCommits);
+      const initialCommits = await fetchCommits();
+      setCommits(initialCommits);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    loadCommits();
+  }, []);
+
+  const refreshCommits = async () => {
+    await loadCommits();
   };
 
   return (
