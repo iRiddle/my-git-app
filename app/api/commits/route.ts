@@ -16,7 +16,9 @@ export async function GET() {
       headers: {
         "Cache-Control": "no-store",
         Pragma: "no-cache",
-        "If-None-Match": "",
+      },
+      params: {
+        timestamp: new Date().getTime(),
       },
     });
 
@@ -26,7 +28,6 @@ export async function GET() {
       headers: {
         "Cache-Control": "no-store, max-age=0",
         Pragma: "no-cache",
-        "If-None-Match": "",
       },
     });
   } catch (error) {
