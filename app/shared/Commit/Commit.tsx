@@ -6,7 +6,8 @@ interface CommitProps {
 }
 
 export const Commit: React.FC<CommitProps> = ({ commit }) => {
-  const commitDate = new Date(commit.commit.author.date);
+  console.log(commit);
+  const commitDate = new Date(commit?.commit?.author?.date || "");
 
   const localeDate = commitDate.toLocaleString("ru-RU", {
     day: "numeric",
@@ -24,7 +25,7 @@ export const Commit: React.FC<CommitProps> = ({ commit }) => {
       <span className="font-bold text-lg">{commit.commit.message}</span>
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-600">
-          by {commit.commit.author.name}
+          by {commit.commit.author?.name || "Unknown"}
         </span>
         <span className="text-sm text-gray-400">
           {`${localeDate} в ${localeTime}`}
