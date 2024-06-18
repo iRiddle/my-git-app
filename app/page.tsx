@@ -7,7 +7,7 @@ import { ICommit } from "./interfaces/ICommit";
 const fetchCommits = async (): Promise<ICommit[]> => {
   const res = await fetch("/api/commits", {
     headers: {
-      "Cache-Control": "no-store",
+      "Cache-Control": "no-store, max-age=0",
       Pragma: "no-cache",
     },
   });
@@ -23,24 +23,45 @@ const Home = () => {
   const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadCommits = async () => {
+  useEffect(() => {
+    const loadCommits = async () => {
+      setIsLoading(true);
+      try {
+        const initialCommits = await fetchCommits();
+        setCommits(initialCommits);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCommits();
+
+    const socket = new WebSocket("ws://localhost:3001");
+
+    socket.onmessage = (event) => {
+      const newCommit = JSON.parse(event.data);
+      if (newCommit.message !== "Connected to WebSocket server") {
+        setCommits((prevCommits) => [newCommit, ...prevCommits]);
+      }
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const refreshCommits = async () => {
     setIsLoading(true);
     try {
-      const initialCommits = await fetchCommits();
-      setCommits(initialCommits);
+      const newCommits = await fetchCommits();
+      setCommits(newCommits);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadCommits();
-  }, []);
-
-  const refreshCommits = async () => {
-    await loadCommits();
   };
 
   return (
