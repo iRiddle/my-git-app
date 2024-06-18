@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import CommitList from "./containers/CommitList";
 import Button from "./shared/Button";
 import { ICommit } from "./interfaces/ICommit";
@@ -27,19 +27,20 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadCommits = async () => {
-      setIsLoading(true);
-      try {
-        const initialCommits = await fetchCommits();
-        setCommits(initialCommits);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const loadCommits = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const initialCommits = await fetchCommits();
+      setCommits(initialCommits);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     loadCommits();
 
     const socket = new WebSocket("ws://localhost:3001");
@@ -52,20 +53,7 @@ const Home = () => {
     return () => {
       socket.close();
     };
-  }, []);
-
-  const refreshCommits = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const newCommits = await fetchCommits();
-      setCommits(newCommits);
-    } catch (error) {
-      if (error instanceof Error) setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [loadCommits]);
 
   return (
     <div className="max-w-3xl mx-auto py-8">
@@ -76,7 +64,7 @@ const Home = () => {
           <span className="text-black">commits</span>
         </h1>
         <Button
-          onClick={refreshCommits}
+          onClick={loadCommits}
           disabled={isLoading}
           className="flex items-center"
         >
