@@ -22,7 +22,7 @@ const fetchCommits = async (): Promise<ICommit[]> => {
   return res.json();
 };
 
-const Home = () => {
+const useCommits = () => {
   const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +54,12 @@ const Home = () => {
       socket.close();
     };
   }, [loadCommits]);
+
+  return { commits, isLoading, error, loadCommits };
+};
+
+const Home = () => {
+  const { commits, isLoading, error, loadCommits } = useCommits();
 
   return (
     <div className="max-w-3xl mx-auto py-8">
