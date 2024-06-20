@@ -32,7 +32,7 @@ export async function GET() {
     const commits = await fetchCommits();
     return NextResponse.json(commits, {
       status: 200,
-      headers: { "Cache-Control": "no-store, max-age=0" },
+      headers: { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" },
     });
   } catch (error) {
     console.error("Error fetching commits:", error);
