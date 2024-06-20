@@ -7,7 +7,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiRefreshCw } from "react-icons/fi";
 
 const fetchCommits = async (): Promise<ICommit[]> => {
-  const res = await fetch("http://localhost:3001/api/commits", {
+  const res = await fetch("/api/commits", {
     headers: {
       "Cache-Control": "no-store, max-age=0",
       Pragma: "no-cache",
@@ -22,7 +22,7 @@ const fetchCommits = async (): Promise<ICommit[]> => {
   return res.json();
 };
 
-const useCommits = () => {
+const Home = () => {
   const [commits, setCommits] = useState<ICommit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,24 +42,7 @@ const useCommits = () => {
 
   useEffect(() => {
     loadCommits();
-
-    const socket = new WebSocket("ws://localhost:3001");
-
-    socket.onmessage = (event) => {
-      const newCommit = JSON.parse(event.data);
-      setCommits((prevCommits) => [newCommit, ...prevCommits]);
-    };
-
-    return () => {
-      socket.close();
-    };
   }, [loadCommits]);
-
-  return { commits, isLoading, error, loadCommits };
-};
-
-const Home = () => {
-  const { commits, isLoading, error, loadCommits } = useCommits();
 
   return (
     <div className="max-w-3xl mx-auto py-8">
