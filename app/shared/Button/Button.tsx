@@ -1,4 +1,4 @@
-import { ReactNode, FC, memo } from "react";
+import { ReactNode, FC } from "react";
 import cn from "classnames";
 
 interface IButtonProps {
