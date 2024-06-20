@@ -27,5 +27,3 @@ export const Commit: React.FC<CommitProps> = ({ commit }) => {
     </div>
   );
 };
-
-export default Commit;
