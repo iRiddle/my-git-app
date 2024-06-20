@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import octokit from "@/app/services/githubClient";
-//test
+
 const fetchAllCommits = async () => {
   const allCommits = [];
   const perPage = 100;
