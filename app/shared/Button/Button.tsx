@@ -25,3 +25,5 @@ export const Button: FC<IButtonProps> = memo(
 );
 
 export default Button;
+
+Button.displayName = "Button";
