@@ -1,41 +1,45 @@
 import { NextResponse } from "next/server";
 import octokit from "@/app/services/githubClient";
 
-const fetchCommits = async () => {
+const fetchAllCommits = async () => {
   const allCommits = [];
-  const perPage = 100;
-  const maxPages = 10;
+  const perPage = 120;
   let page = 1;
   let hasMore = true;
 
-  while (hasMore && page <= maxPages) {
-    const { data } = await octokit.repos.listCommits({
-      owner: "iRiddle",
-      repo: "my-git-app",
-      per_page: perPage,
-      page,
-    });
+  try {
+    while (hasMore) {
+      const response = await octokit.rest.repos.listCommits({
+        owner: "iRiddle",
+        repo: "my-git-app",
+        per_page: perPage,
+        page,
+      });
 
-    if (data.length === 0) {
-      hasMore = false;
-    } else {
-      allCommits.push(...data);
-      page++;
+      const { data } = response;
+
+      if (!data || data.length === 0) {
+        hasMore = false;
+      } else {
+        allCommits.push(...data);
+        page++;
+      }
     }
-  }
 
-  return allCommits;
+    return allCommits;
+  } catch (error) {
+    console.error("Error fetching commits:", error);
+    throw error;
+  }
 };
 
 export async function GET() {
   try {
-    const commits = await fetchCommits();
+    const commits = await fetchAllCommits();
     return NextResponse.json(commits, {
       status: 200,
-      headers: { "Cache-Control": "no-store, max-age=0", Pragma: "no-cache" },
     });
   } catch (error) {
-    console.error("Error fetching commits:", error);
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     } else {

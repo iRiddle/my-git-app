@@ -19,7 +19,8 @@ const fetchCommits = async (): Promise<ICommit[]> => {
     throw new Error(errorData.message || "Failed to fetch commits");
   }
 
-  return res.json();
+  const data = await res.json();
+  return data;
 };
 
 const Home = () => {
