@@ -10,13 +10,14 @@ const fetchAllCommits = async () => {
   try {
     while (hasMore) {
       const response = await octokit.rest.repos.listCommits({
+        headers: {
+          "Cache-Control": "no-cache",
+          "If-None-Match": "",
+        },
         owner: "iRiddle",
         repo: "my-git-app",
         per_page: perPage,
         page,
-        headers: {
-          "Cache-Control": "no-cache",
-        },
       });
 
       const { data } = response;
