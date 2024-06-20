@@ -11,7 +11,6 @@ const fetchAllCommits = async () => {
     while (hasMore) {
       const response = await octokit.rest.repos.listCommits({
         headers: {
-          "Cache-Control": "no-cache",
           "If-None-Match": "",
         },
         owner: "iRiddle",
