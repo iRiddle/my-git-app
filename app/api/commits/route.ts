@@ -3,7 +3,7 @@ import octokit from "@/app/services/githubClient";
 
 const fetchCommits = async () => {
   const allCommits = [];
-  const perPage = 50;
+  const perPage = 100;
   const maxPages = 10;
   let page = 1;
   let hasMore = true;
